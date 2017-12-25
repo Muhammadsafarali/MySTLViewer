@@ -1,6 +1,7 @@
 package com.dubllik.mystlviewer.activity;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -97,12 +98,18 @@ public class STLViewActivity extends Activity implements FileListDialog.OnFileLi
             return;
         }
 
-        SharedPreferences config = getSharedPreferences("PathSetting", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor configEditor = config.edit();
-        configEditor.putString("lastPath", file.getParent());
-        configEditor.commit();
+//        SharedPreferences config = getSharedPreferences("PathSetting", Activity.MODE_PRIVATE);
+//        SharedPreferences.Editor configEditor = config.edit();
+//        configEditor.putString("lastPath", file.getParent());
+//        configEditor.commit();
 
-        setUpViews(Uri.fromFile(file));
+        Uri url = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" +getResources().getResourcePackageName(R.raw.tridistl)
+                + "/" + getResources().getResourceTypeName(R.raw.tridistl)
+                + "/" + getResources().getResourceEntryName(R.raw.tridistl) + ".stl");
+
+
+        setUpViews(url);
     }
 
     private void setUpViews(Uri uri) {
@@ -121,12 +128,20 @@ public class STLViewActivity extends Activity implements FileListDialog.OnFileLi
         loadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("OnClick");
-                FileListDialog fileListDialog = new FileListDialog(STLViewActivity.this, false, "Choose STL file...", ".stl");
-                fileListDialog.setOnFileListDialogListener(STLViewActivity.this);
+//                Log.e("OnClick");
+//                FileListDialog fileListDialog = new FileListDialog(STLViewActivity.this, false, "Choose STL file...", ".stl");
+//                fileListDialog.setOnFileListDialogListener(STLViewActivity.this);
 
-                SharedPreferences config = getSharedPreferences("PathSetting", Activity.MODE_PRIVATE);
-                fileListDialog.show(config.getString("lastPath", "/mnt/sdcard/"));
+//                SharedPreferences config = getSharedPreferences("PathSetting", Activity.MODE_PRIVATE);
+//                fileListDialog.show(config.getString("lastPath", "/mnt/sdcard/"));
+                Uri url = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                        "://" +getResources().getResourcePackageName(R.raw.tridistl)
+                        + "/" + getResources().getResourceTypeName(R.raw.tridistl)
+                        + "/" + getResources().getResourceEntryName(R.raw.tridistl));
+
+                Log.e("URL: " + url);
+                showModel(url);
+//                fileListDialog.show(String.valueOf(url));
             }
         });
 
@@ -154,6 +169,27 @@ public class STLViewActivity extends Activity implements FileListDialog.OnFileLi
                     if (preferencesButton.getVisibility() == View.INVISIBLE) {
                         ;
                     }
+                }
+            });
+        }
+    }
+
+    public void showModel(Uri uri) {
+        if (uri != null) {
+            setTitle(uri.getPath().substring(uri.getPath().lastIndexOf("/") + 1));
+
+            FrameLayout relativeLayout = (FrameLayout) findViewById(R.id.stlFrameLayout);
+            stlView = new STLView(this, uri);
+            relativeLayout.addView(stlView);
+
+//            toggleButton.setVisibility(View.VISIBLE);
+
+            stlView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+//                    if (preferencesButton.getVisibility() == View.INVISIBLE) {
+//                        ;
+//                    }
                 }
             });
         }

@@ -27,7 +27,8 @@ public class STLView extends GLSurfaceView {
     private STLRenderer stlRenderer;
     private Uri uri;
 
-    public STLView(Context context, Uri uri) {
+    public
+    STLView(Context context, Uri uri) {
         super(context);
 
         this.uri = uri;
